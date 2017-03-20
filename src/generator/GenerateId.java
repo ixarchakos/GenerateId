@@ -50,8 +50,10 @@ public class GenerateId {
 //                System.out.println(cmmList.get(i).getFunctionProperties().get(j));
 //            }
 //        }
+        String[] targetCols = rpf.getTargetColumns().substring(1, rpf.getTargetColumns().length()-1).split(",(?![^(]*\\))");
+        String generatedColumn = targetCols[targetCols.length-1];
         ReadCsv rc = new ReadCsv(rpf.getSourceInputPath());
-        ArrayList<InputDataModel> idmList = rc.readTargetCsv(cmmList);
+        ArrayList<InputDataModel> idmList = rc.readTargetCsv(cmmList, generatedColumn);
         for(int i=0;i<idmList.size();i++){
             for(Object obj: idmList.get(i).getValue()){
                 System.out.println(obj);

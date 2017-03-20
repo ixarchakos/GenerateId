@@ -39,27 +39,27 @@ public class ReadCsv {
         }
     }
     
-    public ArrayList<InputDataModel> readTargetCsv(ArrayList<ColumnMatcherModel> cmmList){
+    public ArrayList<InputDataModel> readTargetCsv(ArrayList<ColumnMatcherModel> cmmList, String generatedColumn){
         ArrayList<InputDataModel> idmList = new ArrayList<>();
         try{
-            String[] nextLine;   
-            
+            String[] nextLine;
             CSVReader reader = new CSVReader(new FileReader(this.path));
-
             nextLine = reader.readNext();
-            
             ArrayList<Integer> colNums = new ArrayList<>();
-            
             for(ColumnMatcherModel cmm : cmmList){
-                System.out.println(cmm.getTargetColumn());
                 for(int i=0;i<nextLine.length;i++){
-                    if(nextLine[i].equals(cmm.getTargetColumn()) /*|| export column.equals... */){
+                    if(nextLine[i].equals(cmm.getTargetColumn())){
                         colNums.add(i);
                         break;
                     }
                 }
+            }           
+            for(int i=0;i<nextLine.length;i++){
+                if(nextLine[i].equals(generatedColumn)){
+                    colNums.add(i);
+                    break;
+                }
             }
-            
             while((nextLine = reader.readNext()) != null){
                 InputDataModel idm = new InputDataModel();
                 for (int i=0; i<colNums.size(); i++){             

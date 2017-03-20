@@ -33,7 +33,6 @@ public class ColumnMatcher {
             String[] targetCols = targetColumn.substring(1, targetColumn.length()-1).split(",(?![^(]*\\))");
             String[] functionCols = function.substring(1, function.length()-1).split(",(?![^(]*\\))");
             checkListParamCombatibility(sourceCols, targetCols, functionCols);
-            
             for(int i=0; i< sourceCols.length; i++){
                 ColumnMatcherModel cmm;
                 if(functionCols[i].contains("(") && functionCols[i].contains(")")){
