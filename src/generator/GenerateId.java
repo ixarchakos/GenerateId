@@ -51,17 +51,19 @@ public class GenerateId {
 //            }
 //        }
         ReadCsv rc = new ReadCsv(rpf.getSourceInputPath());
-        rc.readInputCsv();
+        ArrayList<InputDataModel> idmList = rc.readTargetCsv(cmmList);
+        for(int i=0;i<idmList.size();i++){
+            for(Object obj: idmList.get(i).getValue()){
+                System.out.println(obj);
+            }
+        }
+        
+        //rc.readInputCsv();
         
     }
 
     private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {
         System.out.println("db");
-        for(int i=0;i<cmmList.size();i++){
-            System.out.println(cmmList.get(i).getSourceColumn());
-            System.out.println(cmmList.get(i).getTargetColumn());
-            System.out.println(cmmList.get(i).getFunction());
-        }
     }
     
 }
