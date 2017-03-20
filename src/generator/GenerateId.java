@@ -8,6 +8,7 @@ package generator;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import utils.ExportCsv;
 import utils.ReadCsv;
 import utils.ReadDB;
 import utils.ReadPropertiesFile;
@@ -81,13 +82,8 @@ public class GenerateId {
             }
         }
         
-        System.out.println("----");
-        for(InputDataModel output: targetValues){
-            for(String s: output.getValue()){
-                System.out.println(s);
-            }
-        }
-        System.out.println("----");
+        ExportCsv export = new ExportCsv(rpf.getOutputFile(), targetValues, targetCols);
+        export.performAction();
     }
 
     private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {

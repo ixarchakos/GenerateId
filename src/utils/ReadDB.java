@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author zannis
+ * @author ioannisxar
  */
 public class ReadDB {
     
