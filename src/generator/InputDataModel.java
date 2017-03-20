@@ -52,4 +52,18 @@ public class InputDataModel {
         return max;
     }
     
+    public boolean exists(ArrayList<InputDataModel> targetValues){
+        for(InputDataModel target: targetValues){
+            int matches = 0;
+            for(int i=0; i<this.values.size();i++){
+                if(this.values.get(i).trim().equals(target.getValue().get(i).trim())){
+                    matches++;
+                }
+                if(matches==this.values.size()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

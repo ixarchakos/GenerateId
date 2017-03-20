@@ -27,7 +27,7 @@ public class GenerateId {
         
         ColumnMatcher cm = new ColumnMatcher(rpf.getSourceColumns(), rpf.getTargetColumns(), rpf.getFunctionPerColumn());
         ArrayList<ColumnMatcherModel> cmmList = cm.getMatching();
-        switch (rpf.getCommand()) {
+        switch (rpf.getCommandSource()) {
             case "csv":
                 getFromCsv(rpf, cmmList);
                 break;
@@ -46,14 +46,42 @@ public class GenerateId {
         String generatedColumn = targetCols[targetCols.length-1].trim();
         
         //csv target
-        ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
-        ArrayList<InputDataModel> targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
-
-        int MAX_VALUE = InputDataModel.getMaxValue(targetValues);
+        ArrayList<InputDataModel> targetValues = null;
+        if(rpf.getCommandTarget().equals("csv")){
+            ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
+            targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
+        } else if(rpf.getCommandTarget().equals("db")){
+            
+        } else {
+            System.err.println("Wrong target command!");
+            System.exit(-1);
+        }
+        
+        int max_value = InputDataModel.getMaxValue(targetValues);
         
         ReadCsv rcSource = new ReadCsv(rpf.getSourceInputPath());
         ArrayList<InputDataModel> sourceValues = rcSource.readInputCsv(cmmList);
-
+        
+        // find if exists, if not assign a new id
+        for(InputDataModel sourceInput: sourceValues){
+            if(!sourceInput.exists(targetValues)){
+                InputDataModel idm = new InputDataModel();
+                for(String value: sourceInput.getValue()){
+                    idm.addValue(value);
+                }
+                max_value = max_value + 1;
+                idm.addValue(String.valueOf(max_value));
+                targetValues.add(idm);
+            }
+        }
+        
+        System.out.println("----");
+        for(InputDataModel output: targetValues){
+            for(String s: output.getValue()){
+                System.out.println(s);
+            }
+        }
+        System.out.println("----");
     }
 
     private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {

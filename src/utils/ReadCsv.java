@@ -48,7 +48,7 @@ public class ReadCsv {
             }
             
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return inputData;
     }
@@ -84,7 +84,7 @@ public class ReadCsv {
             }
             
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return idmList;
     }
