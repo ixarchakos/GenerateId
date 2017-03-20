@@ -20,7 +20,8 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        GenerateId generator = new GenerateId("/home/ioannisxar/a/mapping.properties");
+        GenerateId generator = new GenerateId("C:\\Users\\zannis\\Dropbox\\mapping.properties");
+        //GenerateId generator = new GenerateId("/home/ioannisxar/a/mapping.properties");
         generator.performAction();
     }
     

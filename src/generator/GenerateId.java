@@ -41,27 +41,19 @@ public class GenerateId {
     }
 
     private void getFromCsv(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {
-//        System.out.println("csv");
-//        for(int i=0;i<cmmList.size();i++){
-//            System.out.println(cmmList.get(i).getSourceColumn());
-//            System.out.println(cmmList.get(i).getTargetColumn());
-//            System.out.println(cmmList.get(i).getFunction());
-//            for(int j=0;j<cmmList.get(i).getFunctionProperties().size();j++){
-//                System.out.println(cmmList.get(i).getFunctionProperties().get(j));
-//            }
-//        }
+
         String[] targetCols = rpf.getTargetColumns().substring(1, rpf.getTargetColumns().length()-1).split(",(?![^(]*\\))");
-        String generatedColumn = targetCols[targetCols.length-1];
-        ReadCsv rc = new ReadCsv(rpf.getSourceInputPath());
-        ArrayList<InputDataModel> idmList = rc.readTargetCsv(cmmList, generatedColumn);
-        for(int i=0;i<idmList.size();i++){
-            for(Object obj: idmList.get(i).getValue()){
-                System.out.println(obj);
-            }
-        }
+        String generatedColumn = targetCols[targetCols.length-1].trim();
         
-        //rc.readInputCsv();
+        //csv target
+        ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
+        ArrayList<InputDataModel> targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
+
+        int MAX_VALUE = InputDataModel.getMaxValue(targetValues);
         
+        ReadCsv rcSource = new ReadCsv(rpf.getSourceInputPath());
+        ArrayList<InputDataModel> sourceValues = rcSource.readInputCsv(cmmList);
+
     }
 
     private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {

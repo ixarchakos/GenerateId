@@ -6,6 +6,7 @@
 package generator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -14,30 +15,41 @@ import java.util.ArrayList;
 public class InputDataModel {
     
     private int id;
-    private ArrayList<Object> values;
+    private ArrayList<String> values;
     public InputDataModel(){
         this.id = -1;
         this.values = new ArrayList<>();
     }
     
-    public void setId(int id){
-        this.id = id;
-    }
-    
-    public int getId(){
-        return this.id;
-    }
-    
-    public void addValue(Object val){
+    public void addValue(String val){
         this.values.add(val);
     }
     
-    public ArrayList<Object> getValue(){
+    public ArrayList<String> getValue(){
         return this.values;
     }
     
     public int size(){
         return this.values.size();
+    }
+    
+    public int getId(){
+        if (size()>0){
+            id = Integer.valueOf(this.values.get(size()-1));
+        }
+        return id;
+    }
+    
+    public static int getMaxValue(ArrayList<InputDataModel> targetValues){
+        int max = 0;
+        ArrayList<Integer> l = new ArrayList<>();
+        for(int i=0;i<targetValues.size();i++){      
+            l.add(targetValues.get(i).getId());
+        }
+        if (l.size()>0){
+            max = Collections.max(l);
+        }
+        return max;
     }
     
 }

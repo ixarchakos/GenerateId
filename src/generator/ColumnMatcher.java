@@ -38,9 +38,9 @@ public class ColumnMatcher {
                 if(functionCols[i].contains("(") && functionCols[i].contains(")")){
                     String functionName = functionCols[i].split("\\(")[0];
                     String[] functionProperties = functionCols[i].split("\\(")[1].split("\\)")[0].split(",");
-                    cmm = new ColumnMatcherModel(sourceCols[i], targetCols[i], functionName, Arrays.asList(functionProperties));
+                    cmm = new ColumnMatcherModel(sourceCols[i].trim(), targetCols[i].trim(), functionName.trim(), Arrays.asList(functionProperties));
                 } else {
-                    cmm = new ColumnMatcherModel(sourceCols[i], targetCols[i], functionCols[i], new ArrayList());
+                    cmm = new ColumnMatcherModel(sourceCols[i].trim(), targetCols[i].trim(), functionCols[i].trim(), new ArrayList());
                 }
                 cmmList.add(cmm);
             }
