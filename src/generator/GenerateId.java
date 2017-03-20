@@ -47,18 +47,22 @@ public class GenerateId {
         String[] targetCols = rpf.getTargetColumns().substring(1, rpf.getTargetColumns().length()-1).split(",(?![^(]*\\))");
         String generatedColumn = targetCols[targetCols.length-1].trim();
         
-        //csv target
+        //target choice
         ArrayList<InputDataModel> targetValues = null;
-        if(rpf.getCommandTarget().equals("csv")){
-            ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
-            targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
-        } else if(rpf.getCommandTarget().equals("db")){
-            ReadDB rdb = new ReadDB(rpf.getTargetInputPath().split(",")[0], rpf.getTargetInputPath().split(",")[1]);
-            rdb.readTargetDatabase();
-        } else {
-            System.err.println("Wrong target command!");
-            System.exit(-1);
+        switch (rpf.getCommandTarget()) {
+            case "csv":
+                ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
+                targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
+                break;
+            case "db":
+                ReadDB rdb = new ReadDB(rpf.getTargetInputPath().split(",")[0], rpf.getTargetInputPath().split(",")[1]);
+                targetValues = rdb.readTargetDatabase(targetCols);
+                break;
+            default:
+                System.err.println("Wrong target command!");
+                System.exit(-1);
         }
+        
         int max_value = InputDataModel.getMaxValue(targetValues);
         
         ReadCsv rcSource = new ReadCsv(rpf.getSourceInputPath());
