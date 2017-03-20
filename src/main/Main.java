@@ -7,6 +7,7 @@ package main;
 
 import generator.GenerateId;
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  *
@@ -18,7 +19,7 @@ public class Main {
      * @param args the command line arguments
      * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
         // TODO code application logic here
         GenerateId generator = new GenerateId("C:\\Users\\zannis\\Dropbox\\mapping.properties");
         //GenerateId generator = new GenerateId("/home/ioannisxar/a/mapping.properties");

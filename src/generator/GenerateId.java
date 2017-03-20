@@ -6,8 +6,10 @@
 package generator;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import utils.ReadCsv;
+import utils.ReadDB;
 import utils.ReadPropertiesFile;
 
 /**
@@ -23,7 +25,7 @@ public class GenerateId {
         rpf.getProperties();
     }
     
-    public void performAction(){
+    public void performAction() throws SQLException, IOException, ClassNotFoundException{
         
         ColumnMatcher cm = new ColumnMatcher(rpf.getSourceColumns(), rpf.getTargetColumns(), rpf.getFunctionPerColumn());
         ArrayList<ColumnMatcherModel> cmmList = cm.getMatching();
@@ -40,7 +42,7 @@ public class GenerateId {
         }
     }
 
-    private void getFromCsv(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {
+    private void getFromCsv(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) throws SQLException, IOException, ClassNotFoundException {
 
         String[] targetCols = rpf.getTargetColumns().substring(1, rpf.getTargetColumns().length()-1).split(",(?![^(]*\\))");
         String generatedColumn = targetCols[targetCols.length-1].trim();
@@ -51,12 +53,12 @@ public class GenerateId {
             ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
             targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
         } else if(rpf.getCommandTarget().equals("db")){
-            
+            ReadDB rdb = new ReadDB(rpf.getTargetInputPath().split(",")[0], rpf.getTargetInputPath().split(",")[1]);
+            rdb.readTargetDatabase();
         } else {
             System.err.println("Wrong target command!");
             System.exit(-1);
         }
-        
         int max_value = InputDataModel.getMaxValue(targetValues);
         
         ReadCsv rcSource = new ReadCsv(rpf.getSourceInputPath());
