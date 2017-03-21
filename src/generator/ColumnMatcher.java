@@ -14,7 +14,7 @@ import java.util.Arrays;
  */
 public class ColumnMatcher {
     
-    private String sourceColumn, targetColumn, function;
+    private final String sourceColumn, targetColumn, function;
     
     public ColumnMatcher(String sourceColumn, String targetColumn, String function){
         this.sourceColumn = sourceColumn;

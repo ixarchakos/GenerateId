@@ -10,8 +10,6 @@ import generator.InputDataModel;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -36,7 +34,7 @@ public class ExportCsv {
             for(InputDataModel output: targetValues){
                 String row = "";
                 for(String s: output.getValue()){
-                    row += s+",";
+                    row += s + ",";
                 }
                 csvWriter.writeNext(row.substring(0, row.length()-1).split(","));
             }

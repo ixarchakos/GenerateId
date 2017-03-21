@@ -120,7 +120,7 @@ public class GenerateId {
             if(function.equalsIgnoreCase("split")){
                 value = Functions.split(value, functionProperties.get(1), Integer.valueOf(functionProperties.get(2)));
             }
-        } catch (Exception e){
+        } catch (NumberFormatException e){
             System.err.println(e.getMessage());
             System.exit(-1);
         }

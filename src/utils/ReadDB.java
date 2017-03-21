@@ -56,7 +56,7 @@ public class ReadDB {
                 }
                 inputData.add(idm);
             }
-        } catch (Exception e){
+        } catch (ClassNotFoundException | SQLException e){
             System.err.println(e.getMessage());
             System.exit(-1);
         } finally {

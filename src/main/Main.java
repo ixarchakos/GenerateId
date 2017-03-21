@@ -18,9 +18,10 @@ public class Main {
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
+     * @throws java.sql.SQLException
+     * @throws java.lang.ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
-        // TODO code application logic here
         //GenerateId generator = new GenerateId("C:\\Users\\zannis\\Dropbox\\mapping.properties");
         GenerateId generator = new GenerateId("/home/ioannisxar/Dropbox/mappingu.properties");
         generator.performAction();

@@ -13,8 +13,8 @@ import java.util.List;
  */
 public class ColumnMatcherModel {
     
-    private String sourceColumn, targetColumn, function;
-    private List<String> functionProperties;
+    private final String sourceColumn, targetColumn, function;
+    private final List<String> functionProperties;
     public ColumnMatcherModel(String sourceColumn, String targetColumn, String function, List<String> functionProperties){
         this.sourceColumn = sourceColumn;
         this.targetColumn = targetColumn;
