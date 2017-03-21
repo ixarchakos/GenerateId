@@ -22,21 +22,35 @@ public class ReadCsv {
         this.path = path;
     }
     
-    public void readInputCsv(){
+    public ArrayList<InputDataModel> readInputCsv(ArrayList<ColumnMatcherModel> cmmList){
+        ArrayList<InputDataModel> inputData = new ArrayList<>();
         try{
-           String[] nextLine;        
-           // nextLine[] is an array of values from the line
-           CSVReader reader = new CSVReader(new FileReader(this.path));
-           System.out.println(this.path);
-           //read only first line
-           nextLine = reader.readNext();
-           for (int i=0; i<nextLine.length; i++){             
-               String columnName = nextLine[i].trim();
-               System.out.println(columnName);
-           }
+            String[] nextLine;
+            CSVReader reader = new CSVReader(new FileReader(this.path));
+            nextLine = reader.readNext();
+            ArrayList<Integer> colNums = new ArrayList<>();
+            for(ColumnMatcherModel cmm : cmmList){
+                for(int i=0;i<nextLine.length;i++){
+                    if(nextLine[i].equals(cmm.getSourceColumn())){
+                        colNums.add(i);
+                        break;
+                    }
+                }
+            }           
+
+            while((nextLine = reader.readNext()) != null){
+                InputDataModel idm = new InputDataModel();
+                for (int i=0; i<colNums.size(); i++){             
+                    String value = nextLine[colNums.get(i)].trim();
+                    idm.addValue(value);
+                }
+                inputData.add(idm);
+            }
+            
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
+        return inputData;
     }
     
     public ArrayList<InputDataModel> readTargetCsv(ArrayList<ColumnMatcherModel> cmmList, String generatedColumn){
@@ -70,7 +84,7 @@ public class ReadCsv {
             }
             
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return idmList;
     }
