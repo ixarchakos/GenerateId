@@ -5,17 +5,14 @@
  */
 package functions;
 
-import java.util.List;
-
 /**
  *
  * @author ioannisxar
  */
-public class Substring {
-    private List<String> functionProperties;
+public class Functions {
     
-    public Substring(List<String> functionProperties){
-        this.functionProperties = functionProperties;
+    public static String split(String value, String delimeter, int part){
+        return value.split(delimeter.trim().replace("\"", ""))[part];
     }
     
 }

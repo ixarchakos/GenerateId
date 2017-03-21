@@ -5,9 +5,11 @@
  */
 package generator;
 
+import functions.Functions;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import utils.ExportCsv;
 import utils.ReadCsv;
 import utils.ReadDB;
@@ -63,14 +65,26 @@ public class GenerateId {
                 System.err.println("Wrong target command!");
                 System.exit(-1);
         }
-        
-        int max_value = InputDataModel.getMaxValue(targetValues);
-        
+
         ReadCsv rcSource = new ReadCsv(rpf.getSourceInputPath());
         ArrayList<InputDataModel> sourceValues = rcSource.readInputCsv(cmmList);
+        targetValues = generateId(sourceValues, targetValues, cmmList);
+        ExportCsv export = new ExportCsv(rpf.getOutputFile(), targetValues, targetCols);
+        export.performAction();
+    }
+
+    private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {
+        System.out.println("db");
+    }
+    
+    private ArrayList<InputDataModel> generateId(ArrayList<InputDataModel> sourceValues, 
+            ArrayList<InputDataModel> targetValues, ArrayList<ColumnMatcherModel> cmmList){
+        int max_value = InputDataModel.getMaxValue(targetValues);
+        
+        ArrayList<InputDataModel> transformSourceValues = transformSourceValues(sourceValues, cmmList);
         
         // find if exists, if not assign a new id
-        for(InputDataModel sourceInput: sourceValues){
+        for(InputDataModel sourceInput: transformSourceValues){
             if(!sourceInput.exists(targetValues)){
                 InputDataModel idm = new InputDataModel();
                 for(String value: sourceInput.getValue()){
@@ -81,13 +95,36 @@ public class GenerateId {
                 targetValues.add(idm);
             }
         }
+        return targetValues;   
+    }
+    
+    private ArrayList<InputDataModel> transformSourceValues(ArrayList<InputDataModel> sourceValues, ArrayList<ColumnMatcherModel> cmmList){
+        ArrayList<InputDataModel> sourceValuesTransformed = new ArrayList<>();
         
-        ExportCsv export = new ExportCsv(rpf.getOutputFile(), targetValues, targetCols);
-        export.performAction();
+        for(InputDataModel idm: sourceValues){
+            InputDataModel newIdm = new InputDataModel();
+            for(int i=0; i<idm.getValue().size();i++){
+                if(!cmmList.get(i).getSourceColumn().trim().equals(cmmList.get(i).getFunction())){
+                    newIdm.addValue(getFunctionValue(idm.getValue().get(i), cmmList.get(i).getFunction(), cmmList.get(i).getFunctionProperties()));
+                } else {
+                    newIdm.addValue(idm.getValue().get(i));
+                }
+            }
+            sourceValuesTransformed.add(newIdm);
+        }
+        return sourceValuesTransformed;        
     }
 
-    private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {
-        System.out.println("db");
+    private String getFunctionValue(String value, String function, List<String> functionProperties) {
+        try{
+            if(function.equalsIgnoreCase("split")){
+                value = Functions.split(value, functionProperties.get(1), Integer.valueOf(functionProperties.get(2)));
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        }
+        return value;
     }
     
 }
