@@ -9,7 +9,9 @@ import functions.Functions;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import utils.ExportCsv;
 import utils.ReadCsv;
 import utils.ReadDB;
@@ -75,8 +77,36 @@ public class GenerateId {
         export.performAction();
     }
 
-    private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) {
-        System.out.println("db");
+    private void getFromDB(ReadPropertiesFile rpf, ArrayList<ColumnMatcherModel> cmmList) throws SQLException, IOException, ClassNotFoundException {
+        String[] targetCols = rpf.getTargetColumns().substring(1, rpf.getTargetColumns().length()-1).split(",(?![^(]*\\))");
+        String generatedColumn = targetCols[targetCols.length-1].trim();
+        
+        //target choice
+        ArrayList<InputDataModel> targetValues = null;
+        switch (rpf.getCommandTarget()) {
+            case "csv":
+                ReadCsv rcTarget = new ReadCsv(rpf.getTargetInputPath());
+                targetValues = rcTarget.readTargetCsv(cmmList, generatedColumn);
+                break;
+            case "db":
+                ReadDB rdb = new ReadDB(rpf.getTargetInputPath().split(",")[0], rpf.getTargetInputPath().split(",")[1]);
+                targetValues = rdb.readTargetDatabase(targetCols);
+                break;
+            default:
+                System.err.println("Wrong target command!");
+                System.exit(-1);
+        }
+
+        ReadDB rdb = new ReadDB(rpf.getSourceInputPath().split(",")[0], rpf.getSourceInputPath().split(",")[1]);
+        ArrayList<InputDataModel> sourceValues = rdb.readSourceDatabase(cmmList);
+        targetValues = generateId(sourceValues, targetValues, cmmList);
+        
+        /*
+         * Replace to export to database
+        */
+        ExportCsv export = new ExportCsv(rpf.getOutputFile(), targetValues, targetCols);
+        export.performAction();       
+        
     }
     
     private ArrayList<InputDataModel> generateId(ArrayList<InputDataModel> sourceValues, 
@@ -103,12 +133,6 @@ public class GenerateId {
     
     private ArrayList<InputDataModel> transformSourceValues(ArrayList<InputDataModel> sourceValues, ArrayList<ColumnMatcherModel> cmmList){
         ArrayList<InputDataModel> sourceValuesTransformed = new ArrayList<>();
-        
-//        for(int i=0;i<cmmList.size();i++){
-//            System.out.println(cmmList.get(i).getSourceColumn());
-//            System.out.println(cmmList.get(i).getFunction());
-//        }
-        
         for(InputDataModel idm: sourceValues){
             InputDataModel newIdm = new InputDataModel();
             for(ColumnMatcherModel cmm: cmmList){
@@ -116,14 +140,18 @@ public class GenerateId {
                 if(cmm.getFunction().equals("CONSTANT_VALUE")){
                     newIdm.addValue(cmm.getFunctionProperties().get(0));
                 } else if (cmm.getFunction().equals(cmm.getSourceColumn())){
+                    Set<String> a = new HashSet<>();
                     for(int i=0;i<idm.getValue().size();i++){
-                        if(cmm.getSourceColumn().equals(idm.getKey().get(i))){
+                        if(cmm.getSourceColumn().equals(idm.getKey().get(i)) && !a.contains(cmm.getSourceColumn())){
+                            a.add(cmm.getSourceColumn());
                             newIdm.addValue(idm.getValue().get(i));
                         }
                     }
                 } else {
+                    Set<String> a = new HashSet<>();
                     for(int i=0;i<idm.getValue().size();i++){
-                        if(cmm.getSourceColumn().equals(idm.getKey().get(i))){
+                        if(cmm.getSourceColumn().equals(idm.getKey().get(i)) && !a.contains(cmm.getSourceColumn())){
+                            a.add(cmm.getSourceColumn());
                             newIdm.addValue(getFunctionValue(idm.getValue().get(i),cmm.getFunction(),cmm.getFunctionProperties()));
                         }
                     }

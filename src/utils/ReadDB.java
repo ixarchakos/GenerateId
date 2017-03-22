@@ -5,6 +5,7 @@
  */
 package utils;
 
+import generator.ColumnMatcherModel;
 import generator.InputDataModel;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -29,6 +30,54 @@ public class ReadDB {
     public ReadDB(String path, String table){
         this.path = path;
         this.table = table;
+    }
+    
+    public ArrayList<InputDataModel> readSourceDatabase(ArrayList<ColumnMatcherModel> cmmList) throws SQLException, IOException, ClassNotFoundException{
+        ArrayList<InputDataModel> inputData = new ArrayList<>();
+        ArrayList<String> configurationProperties = getExportDatabaseConfig();
+        Connection connection = null;
+        try{
+            connection = getConnectionToDatabase(configurationProperties.get(0), configurationProperties.get(1)+configurationProperties.get(4), 
+                    configurationProperties.get(2), configurationProperties.get(3));
+            Statement statement = connection.createStatement();
+            
+            String columnsToQuery = "";
+            for(ColumnMatcherModel cmm: cmmList){
+                if(!cmm.getSourceColumn().equalsIgnoreCase("CONSTANT_VALUE_SOURCE")){
+                    columnsToQuery += cmm.getSourceColumn() + ",";
+                }
+            }
+            ResultSet tableRows = null;
+            if(columnsToQuery.length() > 0){
+                columnsToQuery = columnsToQuery.substring(0, columnsToQuery.length()-1);
+                tableRows = statement.executeQuery("SELECT " + columnsToQuery + " FROM " + table + ";");
+            } else {
+                tableRows = statement.executeQuery("SELECT * FROM " + table + ";");
+            }
+            
+
+            ResultSetMetaData rsmd = tableRows.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            while(tableRows.next()){
+                InputDataModel idm = new InputDataModel();
+                for(int i=1;i<=columnsNumber;i++){
+                    idm.addValue(String.valueOf(tableRows.getObject(i)));
+                    if(columnsToQuery.length() > 0){
+                        idm.addKey(columnsToQuery.split(",")[i-1]);
+                    } else {
+                        idm.addKey("none");
+                    }
+                }
+                inputData.add(idm);
+            }
+        } catch (ClassNotFoundException | SQLException e){
+            System.err.println(e.getMessage());
+            System.exit(-1);
+        } finally {
+            if (connection != null)
+                connection.close();
+        }
+        return inputData;
     }
     
     public ArrayList<InputDataModel> readTargetDatabase(String[] targetColumns) throws SQLException, IOException, ClassNotFoundException{
