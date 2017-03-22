@@ -30,7 +30,7 @@ public class GenerateId {
     
     public void performAction() throws SQLException, IOException, ClassNotFoundException{
         
-        ColumnMatcher cm = new ColumnMatcher(rpf.getSourceColumns(), rpf.getTargetColumns(), rpf.getFunctionPerColumn());
+        ColumnMatcher cm = new ColumnMatcher(rpf.getTargetColumns(), rpf.getFunctionPerColumn());
         ArrayList<ColumnMatcherModel> cmmList = cm.getMatching();
         switch (rpf.getCommandSource()) {
             case "csv":
@@ -65,10 +65,12 @@ public class GenerateId {
                 System.err.println("Wrong target command!");
                 System.exit(-1);
         }
-
+        
         ReadCsv rcSource = new ReadCsv(rpf.getSourceInputPath());
         ArrayList<InputDataModel> sourceValues = rcSource.readInputCsv(cmmList);
+       
         targetValues = generateId(sourceValues, targetValues, cmmList);
+        
         ExportCsv export = new ExportCsv(rpf.getOutputFile(), targetValues, targetCols);
         export.performAction();
     }
@@ -79,6 +81,7 @@ public class GenerateId {
     
     private ArrayList<InputDataModel> generateId(ArrayList<InputDataModel> sourceValues, 
             ArrayList<InputDataModel> targetValues, ArrayList<ColumnMatcherModel> cmmList){
+        
         int max_value = InputDataModel.getMaxValue(targetValues);
         
         ArrayList<InputDataModel> transformSourceValues = transformSourceValues(sourceValues, cmmList);
@@ -101,22 +104,41 @@ public class GenerateId {
     private ArrayList<InputDataModel> transformSourceValues(ArrayList<InputDataModel> sourceValues, ArrayList<ColumnMatcherModel> cmmList){
         ArrayList<InputDataModel> sourceValuesTransformed = new ArrayList<>();
         
+//        for(int i=0;i<cmmList.size();i++){
+//            System.out.println(cmmList.get(i).getSourceColumn());
+//            System.out.println(cmmList.get(i).getFunction());
+//        }
+        
         for(InputDataModel idm: sourceValues){
             InputDataModel newIdm = new InputDataModel();
-            for(int i=0; i<idm.getValue().size();i++){
-                if(!cmmList.get(i).getSourceColumn().trim().equals(cmmList.get(i).getFunction())){
-                    newIdm.addValue(getFunctionValue(idm.getValue().get(i), cmmList.get(i).getFunction(), cmmList.get(i).getFunctionProperties()));
+            for(ColumnMatcherModel cmm: cmmList){
+
+                if(cmm.getFunction().equals("CONSTANT_VALUE")){
+                    newIdm.addValue(cmm.getFunctionProperties().get(0));
+                } else if (cmm.getFunction().equals(cmm.getSourceColumn())){
+                    for(int i=0;i<idm.getValue().size();i++){
+                        if(cmm.getSourceColumn().equals(idm.getKey().get(i))){
+                            newIdm.addValue(idm.getValue().get(i));
+                        }
+                    }
                 } else {
-                    newIdm.addValue(idm.getValue().get(i));
+                    for(int i=0;i<idm.getValue().size();i++){
+                        if(cmm.getSourceColumn().equals(idm.getKey().get(i))){
+                            newIdm.addValue(getFunctionValue(idm.getValue().get(i),cmm.getFunction(),cmm.getFunctionProperties()));
+                        }
+                    }
                 }
+
             }
             sourceValuesTransformed.add(newIdm);
         }
-        return sourceValuesTransformed;        
-    }
+        return sourceValuesTransformed;
+        }
+    
 
     private String getFunctionValue(String value, String function, List<String> functionProperties) {
         try{
+            
             if(function.equalsIgnoreCase("split")){
                 value = Functions.split(value, functionProperties.get(1), Integer.valueOf(functionProperties.get(2)));
             }

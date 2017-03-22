@@ -5,11 +5,11 @@
         <group>
             <file>file:/home/ioannisxar/Desktop/GenerateId/src/generator/InputDataModel.java</file>
             <file>file:/home/ioannisxar/Desktop/GenerateId/src/utils/ReadPropertiesFile.java</file>
-            <file>file:/home/ioannisxar/Desktop/GenerateId/src/generator/ColumnMatcherModel.java</file>
+            <file>file:/home/ioannisxar/Desktop/GenerateId/src/utils/ReadDB.java</file>
+            <file>file:/home/ioannisxar/Desktop/GenerateId/src/utils/ExportCsv.java</file>
             <file>file:/home/ioannisxar/Desktop/GenerateId/src/generator/GenerateId.java</file>
             <file>file:/home/ioannisxar/Desktop/GenerateId/src/generator/ColumnMatcher.java</file>
             <file>file:/home/ioannisxar/Desktop/GenerateId/src/utils/ReadCsv.java</file>
-            <file>file:/home/ioannisxar/Desktop/GenerateId/src/main/Main.java</file>
         </group>
     </open-files>
 </project-private>

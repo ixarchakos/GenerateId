@@ -16,17 +16,27 @@ public class InputDataModel {
     
     private int id;
     private ArrayList<String> values;
+    private ArrayList<String> keys;
     public InputDataModel(){
         this.id = -1;
         this.values = new ArrayList<>();
+        this.keys = new ArrayList<>();
     }
     
     public void addValue(String val){
         this.values.add(val);
     }
     
+    public void addKey(String val){
+        this.keys.add(val);
+    }
+    
     public ArrayList<String> getValue(){
         return this.values;
+    }
+    
+    public ArrayList<String> getKey(){
+        return this.keys;
     }
     
     public int size(){

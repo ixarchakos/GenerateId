@@ -18,7 +18,7 @@ public class ReadPropertiesFile {
 
     private final String path;
     
-    private String commandSource, sourceInputPath, sourceColumns, commandTarget, targetInputPath, targetColumns, functionPerColumn, outputFile;
+    private String commandSource, sourceInputPath, commandTarget, targetInputPath, targetColumns, functionPerColumn, outputFile;
     
     public ReadPropertiesFile(String path){
         this.path = path;
@@ -35,9 +35,6 @@ public class ReadPropertiesFile {
                         break;
                     case "sourceInputPath":
                         this.sourceInputPath = splitLine[1];
-                        break;
-                    case "sourceColumns":
-                        this.sourceColumns = splitLine[1];
                         break;
                     case "commandTarget":
                         this.commandTarget = splitLine[1];
@@ -72,10 +69,6 @@ public class ReadPropertiesFile {
     
     public String getSourceInputPath(){
         return sourceInputPath;
-    }
-    
-    public String getSourceColumns(){
-        return sourceColumns;
     }
     
     public String getCommandTarget(){
